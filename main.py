@@ -54,7 +54,6 @@ async def query(query: Query):
     response = requests.post("http://tormenta.ing.puc.cl/api/generate", json={
         "model": "llama3.2",
         "prompt": prompt,
-        "stream": "false",
         })
     
     print(response)
@@ -62,5 +61,5 @@ async def query(query: Query):
         # print the error
         print(response.json())
         raise HTTPException(status_code=500, detail="Error al generar respuesta")
-    
+    print("LISTO", response.json())
     return response.json()
