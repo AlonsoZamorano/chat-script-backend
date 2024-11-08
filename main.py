@@ -48,7 +48,7 @@ async def query(query: Query):
     embedding = model.encode("search_document: " + texto)
     D, I = index.search(np.array([embedding], dtype='float32'), 5)
 
-    retrieved_fragmets = [all_fragments[i] for i in I[0]]
+    retrieved_fragmets = [all_fragments[i] for i in I]
 
     prompt = "Eres un asistente experto en peliculas. Por favor, responde a la siguiente pregunta: " + texto + ". Además te entregamos el siguiente contexto" + " ".join(retrieved_fragmets)
      
