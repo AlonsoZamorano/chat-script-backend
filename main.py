@@ -2,10 +2,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
-import os
 import requests
 from pydantic import BaseModel
+import json
 
 class Query(BaseModel):
     texto: str
@@ -24,7 +23,6 @@ app.add_middleware(
 
 d = 768
 index = faiss.IndexFlatL2(d)
-model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
 
 fragmentos_texto = np.load("fragmentos_texto.npy", allow_pickle=True)
 
@@ -36,9 +34,17 @@ async def root():
 async def query(query: Query):
     print("Query recibida")
     texto = query.texto
-    print(texto)
-    embedding = model.encode("search_document: " + texto)
-    D, I = index.search(np.array([embedding], dtype='float32'), 5)
+    responseEmbedding = requests.post("http://tormenta.ing.puc.cl/api/embed", json={
+        "model": "nomic-embed-text",
+        "input": texto
+    })
+    if responseEmbedding.status_code != 200:
+        # print the error
+        print("ERROR")
+        raise HTTPException(status_code=500, detail="Error al generar embedding")
+    print("EMBEDDING")
+    embedding = responseEmbedding.json()["embeddings"]
+    D, I = index.search(np.array(embedding, dtype='float32'), 5)
 
     retrieved_fragments = []
     # Aplanar I para que sea una lista unidimensional de índices
@@ -56,10 +62,16 @@ async def query(query: Query):
         "prompt": prompt,
         })
     
-    print(response)
     if response.status_code != 200:
         # print the error
         print(response.json())
         raise HTTPException(status_code=500, detail="Error al generar respuesta")
-    print("LISTO", response.json())
-    return response.json()
+    lines = response.text.splitlines()
+
+    # Reconstruir el contenido concatenando los campos "response"
+    full_response = ""
+    for line in lines:
+        data = json.loads(line)
+        full_response += data.get("response", "")
+
+    return full_response
