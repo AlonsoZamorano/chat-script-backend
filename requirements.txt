@@ -13,6 +13,7 @@ faiss-cpu==1.9.0
 fastapi==0.115.4
 fonttools==4.54.1
 h11==0.14.0
+huggingface_hub==0.26.2
 idna==3.10
 ipykernel==6.27.1
 ipython==8.18.1
@@ -47,5 +48,5 @@ traitlets==5.14.0
 typing_extensions==4.12.2
 uvicorn==0.32.0
 wcwidth==0.2.12
-sentence_transformers==2.1.0
+sentence_transformers==3.2.1
 einops==0.8.0
