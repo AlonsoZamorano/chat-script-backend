@@ -47,4 +47,4 @@ typing_extensions==4.12.2
 uvicorn==0.32.0
 wcwidth==0.2.12
 einops==0.8.0
-faiss-cpu==1.7.1
+faiss-gpu==1.7.1
