@@ -1,1 +1,1 @@
-web: ./install_swig.sh && uvicorn tu_app:app --host 0.0.0.0 --port 8000
+web: bash ./install_swig.sh && uvicorn tu_app:app --host 0.0.0.0 --port 8000
